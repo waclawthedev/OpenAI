@@ -20,16 +20,24 @@ final public class OpenAI: OpenAIProtocol {
         /// Optional OpenAI organization identifier. See https://platform.openai.com/docs/api-reference/authentication
         public let organizationIdentifier: String?
         
+        /// API host. Set this property if you use some kind of proxy or your own server. Default is https
+        public let schema: String
+        
         /// API host. Set this property if you use some kind of proxy or your own server. Default is api.openai.com
         public let host: String
+        
+        /// API port. Set this property if you use some kind of proxy or your own server. Default is 80
+        public let port: Int
         
         /// Default request timeout
         public let timeoutInterval: TimeInterval
         
-        public init(token: String, organizationIdentifier: String? = nil, host: String = "api.openai.com", timeoutInterval: TimeInterval = 60.0) {
+        public init(token: String, organizationIdentifier: String? = nil, schema: String = "https", host: String = "api.openai.com", port: Int = 80, timeoutInterval: TimeInterval = 60.0) {
             self.token = token
             self.organizationIdentifier = organizationIdentifier
+            self.schema = schema
             self.host = host
+            self.port = port
             self.timeoutInterval = timeoutInterval
         }
     }
@@ -196,8 +204,9 @@ extension OpenAI {
     
     func buildURL(path: String) -> URL {
         var components = URLComponents()
-        components.scheme = "https"
+        components.scheme = configuration.schema
         components.host = configuration.host
+        components.port = configuration.port
         components.path = path
         return components.url!
     }
